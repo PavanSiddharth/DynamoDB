@@ -3,24 +3,64 @@ import logo from './logo.svg';
 import './App.css';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
-import ReactTable from "react-table";  
-//import "react-table/react-table.css"; 
+
+import Table from 'react-bootstrap/Table'
+ 
 
 class App extends Component{
 
-  
-
-  state = {
-    device_id : null,
-    timestamp : null,
-    data : null,
-    columns : null,
-    dataSource: {}
-  };
-
-  constructor(props) {
+   constructor(props) {
     super(props);
-	
+    this.state = {
+      device_id : null,
+      timestamp : null,
+      data1 : null,
+      options1 : [],
+      options2 : []
+    };
+  }
+
+  componentDidMount = async() => {
+    await fetch('https://e01jb75ql8.execute-api.us-east-2.amazonaws.com/Test?device_id='+this.state.device_id+'&timestamp='+this.state.timestamp,{method: 'GET'}) .then((response) => {
+      
+      return response.json();
+  },function(err){
+    console.log(err);
+  }).then((data) =>{
+    console.log(data); 
+    const temp_data = JSON.parse(data.body).done.Items
+    const data1 = []
+    let i
+    for(i in temp_data)
+    {
+      console.log(temp_data[i])
+      data1.push(temp_data[i]) 
+    }
+    console.log(data1)
+    this.setState({data1:data1})
+    console.log(this.state);
+    if(data1!=null)
+    {
+      let i
+      for(i in data1)
+      {
+      let options1 = this.state.options1
+      let options2 = this.state.options2
+      options1.push(data1[i].Device_ID)
+      options2.push(data1[i].timestamp)
+       this.setState({options1:options1})
+       this.setState({options2:options2})
+      
+      }
+    }
+    if(this.state.options1.length>0)
+    {
+      console.log(this.state)
+    }
+
+    
+  });
+
   }
 
 onChangeHandler1 = (event) => {
@@ -35,45 +75,13 @@ onChangeHandler2 = (event) => {
   this.setState({timestamp:timestamp});
 };
 
- onSubmitHandler = async() => {
-    const response = await fetch('https://e01jb75ql8.execute-api.us-east-2.amazonaws.com/Test?device_id='+this.state.device_id+'&timestamp='+this.state.timestamp,{method: 'GET'}) .then((response) => {
-      return response.json();
-      
-  },function(err){
-    console.log(err);
-  });
-  console.log(JSON.parse(response.body).done.Items);  
-  
-const data = JSON.parse(response.body).done.Items;
-console.log(data)
-
- let checkVariable = () =>{
-
-  if (typeof data !== "undefined") {
-    console.log(JSON.parse(response.body).done.Items)
-    const s = JSON.parse(response.body).done.Items
-    this.setState({data:s})
-  }
-}
-
-setTimeout(checkVariable, 1000);
-
-//this.setState({data:JSON.parse(response.body).done.Items})
-this.setState({columns:[{  
-  Header: 'Device_ID',  
-  accessor: 'Device_ID'  
-  },{  
-  Header: 'timestamp',  
-  accessor: 'timestamp'  
-  },{  
-    Header: 'enviro data',  
-    accessor: 'enviro data'  
-    }
-]}) 
-console.log(this.state)
+ onSubmitHandler = () => {
 
 
-}
+
+};
+
+
 
 
 
@@ -89,25 +97,34 @@ render() {
   const defaultOption2 = options2[0];
 
   let dropdown1 = <div>
-  <Dropdown options={options1} onChange={(event => this.onChangeHandler1(event))} value={defaultOption1} placeholder="Select an option" />
+  <Dropdown options={this.state.options1} onChange={(event => this.onChangeHandler1(event))} value={defaultOption1} placeholder="Select an option" />
   </div>
 
   let dropdown2 =  <div>
-  <Dropdown options={options2} onChange={(event => this.onChangeHandler2(event))} value={defaultOption2} placeholder="Select an option" />
+  <Dropdown options={this.state.options2} onChange={(event => this.onChangeHandler2(event))} value={defaultOption2} placeholder="Select an option" />
   </div>
 
   let table;
- 
-  if(this.state.data==null){
-     table = <div></div> 
+  let buffer =[]
+  if(this.state.data1==null){
+     
+     buffer.push(<div></div>) 
   }
   else
   {
-    table = <div><ReactTable  
-    data={this.state.data}  
-    columns={this.state.columns}></ReactTable></div>
+    let i
+ 
+    for(i in this.state.data1)
+    {
+    table = <tr>
+    <td>{this.state.data1[i].Device_ID}</td>
+    <td>{this.state.data1[i].timestamp}</td>
+    <td>{this.state.data1[i]["enviro data"].Result}</td>
+  </tr>
+  buffer.push(table)
+    }
+    
   }
-
 
 
   return(
@@ -115,7 +132,20 @@ render() {
     {dropdown1}
     {dropdown2}
     <button className="Button"   value = "submit" onClick = {this.onSubmitHandler}>Submit</button>
-    {table}
+    <Table striped bordered hover>
+  <thead>
+    <tr>
+      <th>Device_ID</th>
+      <th>timestamp</th>
+      <th>enviro_data</th>
+    </tr>
+  </thead>
+  <tbody>
+
+  {buffer}
+
+  </tbody>
+</Table>
     </div>
     )
 }
