@@ -22,7 +22,9 @@ class App extends Component{
   }
 
   componentDidMount = async() => {
-    await fetch('https://e01jb75ql8.execute-api.us-east-2.amazonaws.com/Test?device_id='+this.state.device_id+'&timestamp='+this.state.timestamp,{method: 'GET'}) .then((response) => {
+    await fetch('https://e01jb75ql8.execute-api.us-east-2.amazonaws.com/Test?device_id='+this.state.device_id+'&timestamp='+this.state.timestamp,{method: 'GET',headers: {
+      "x-api-key": "GWxQN3E0pw67TtTnRY2KQ5EFYBNZeday27p3raxr",
+    }}) .then((response) => {
       
       return response.json();
   },function(err){
