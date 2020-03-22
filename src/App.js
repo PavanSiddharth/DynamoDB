@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
+import csvDownload from 'json-to-csv-export'
 
 import Table from 'react-bootstrap/Table'
  
@@ -81,27 +82,29 @@ onChangeHandler2 = (event) => {
 
 };
 
-
+DeviceIdClickHandler = (event) => {
+  event.preventDefault();
+      console.log(event.target.value)
+      let i = event.target.value
+      let device_id = this.state.data1[i].Device_ID
+      let timestamp = this.state.data1[i].timestamp
+      let enviro_data = this.state.data1[i]["enviro data"].Result
+      csvDownload(enviro_data)
+      
+};
 
 
 
 render() {
 
-  const options1 = [
-    'HA-8180', 'HA-8181'
-  ];
 
-  const options2 = ['1584614008812' , '1584614084785' , '1584614084785']
-
-  const defaultOption1 = options1[0];
-  const defaultOption2 = options2[0];
 
   let dropdown1 = <div>
-  <Dropdown options={this.state.options1} onChange={(event => this.onChangeHandler1(event))} value={defaultOption1} placeholder="Select an option" />
+  <Dropdown options={this.state.options1} onChange={(event => this.onChangeHandler1(event))}  placeholder="Select an option" />
   </div>
 
   let dropdown2 =  <div>
-  <Dropdown options={this.state.options2} onChange={(event => this.onChangeHandler2(event))} value={defaultOption2} placeholder="Select an option" />
+  <Dropdown options={this.state.options2} onChange={(event => this.onChangeHandler2(event))} placeholder="Select an option" />
   </div>
 
   let table;
@@ -117,7 +120,8 @@ render() {
     for(i in this.state.data1)
     {
     table = <tr>
-    <td>{this.state.data1[i].Device_ID}</td>
+    <td><button type="button" className="Button" value={i} onClick={(event => this.DeviceIdClickHandler(event))}> {this.state.data1[i].Device_ID} </button>
+    </td>
     <td>{this.state.data1[i].timestamp}</td>
     <td>{this.state.data1[i]["enviro data"].Result}</td>
   </tr>
