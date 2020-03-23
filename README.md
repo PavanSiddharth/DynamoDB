@@ -4,6 +4,10 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+### 'npm install'
+
+Installs all the required packages
+
 ### `npm start`
 
 Runs the app in the development mode.<br />
@@ -47,4 +51,7 @@ react-dropdown , json-to-csv-export
 Row size of DynamoDB is below 5000
 NodeJS installed
 CORS Enabled
+
+### Precursors
+npm and node installation needed
 
